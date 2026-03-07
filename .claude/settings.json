@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx prettier $CLAUDE_FILE_PATHS --write"
+            "command": "npx prettier --write $CLAUDE_FILE_PATHS"
           }
         ]
       }
