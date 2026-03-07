@@ -1,8 +1,8 @@
 import js from "@eslint/js";
-import { defineConfig } from "eslint/config";
 import eslintPluginAstro from "eslint-plugin-astro";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import pluginReact from "eslint-plugin-react";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
