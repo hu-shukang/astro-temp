@@ -1,11 +1,12 @@
 {
-	"recommendations": [
-		"astro-build.astro-vscode",
-		"biomejs.biome",
-		"mhutchie.git-graph",
-		"bradlc.vscode-tailwindcss",
-		"anthropic.claude-code",
-		"oderwat.indent-rainbow"
-	],
-	"unwantedRecommendations": []
+  "recommendations": [
+    "astro-build.astro-vscode",
+    "mhutchie.git-graph",
+    "bradlc.vscode-tailwindcss",
+    "anthropic.claude-code",
+    "oderwat.indent-rainbow",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "unwantedRecommendations": []
 }
