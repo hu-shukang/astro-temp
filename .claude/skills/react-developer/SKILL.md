@@ -8,6 +8,7 @@ description: Best practices, patterns, and production-grade implementation guida
 Production-grade patterns for building React applications with TypeScript. Covers component design, hooks, server state (TanStack Query), global state (Zustand), form management (React Hook Form + Zod), and performance patterns.
 
 > **Reference files**: For detailed examples, see `references/` directory:
+>
 > - `hooks-patterns.md` — Custom hooks, useEffect, data fetching patterns
 > - `zustand-patterns.md` — Zustand store setup, middleware, async actions
 > - `forms-patterns.md` — React Hook Form + Zod resolver, field validation
@@ -32,6 +33,7 @@ src/
 ```
 
 > **State ownership guide**:
+>
 > - **Server state** (remote data, caching, sync) → TanStack Query
 > - **Global UI state** (auth user, theme, sidebar) → Zustand
 > - **Form state** → React Hook Form + Zod
@@ -47,12 +49,17 @@ Always type props explicitly. Prefer `interface` for component props:
 ```tsx
 interface ButtonProps {
   label: string;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: "primary" | "secondary" | "danger";
   disabled?: boolean;
   onClick?: () => void;
 }
 
-export function Button({ label, variant = 'primary', disabled, onClick }: ButtonProps) {
+export function Button({
+  label,
+  variant = "primary",
+  disabled,
+  onClick,
+}: ButtonProps) {
   return (
     <button
       className={`btn btn-${variant}`}
@@ -102,7 +109,9 @@ useEffect(() => {
     if (!ignore) setData(data);
   }
   fetchData();
-  return () => { ignore = true; };
+  return () => {
+    ignore = true;
+  };
 }, [id]);
 ```
 
@@ -126,7 +135,7 @@ function useRouter() {
 // useOptimistic pattern
 const [optimisticItems, addOptimisticItem] = useOptimistic(
   items,
-  (state, newItem) => [...state, newItem]
+  (state, newItem) => [...state, newItem],
 );
 ```
 
@@ -142,13 +151,13 @@ const [optimisticItems, addOptimisticItem] = useOptimistic(
 
 ```tsx
 // main.tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 1000 * 60,          // data is fresh for 1 minute
+      staleTime: 1000 * 60, // data is fresh for 1 minute
       refetchOnWindowFocus: true,
     },
   },
@@ -169,21 +178,21 @@ Centralizes `queryKey` + `queryFn` in one place — reusable across `useQuery`, 
 
 ```typescript
 // queries/postQueries.ts
-import { queryOptions } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { queryOptions } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export const postQueries = {
   list: () =>
     queryOptions({
-      queryKey: ['posts'],
+      queryKey: ["posts"],
       queryFn: api.getPosts,
       staleTime: 1000 * 60 * 5,
     }),
   detail: (id: number) =>
     queryOptions({
-      queryKey: ['posts', id],
+      queryKey: ["posts", id],
       queryFn: () => api.getPost(id),
-      enabled: id > 0,               // disabled when id is invalid
+      enabled: id > 0, // disabled when id is invalid
     }),
 };
 ```
@@ -192,15 +201,19 @@ export const postQueries = {
 
 ```tsx
 function PostList() {
-  const { data, isPending, isError, error, isFetching } = useQuery(postQueries.list());
+  const { data, isPending, isError, error, isFetching } = useQuery(
+    postQueries.list(),
+  );
 
   if (isPending) return <p>Loading...</p>;
-  if (isError)   return <p>Error: {error.message}</p>;
+  if (isError) return <p>Error: {error.message}</p>;
 
   return (
     <>
       {isFetching && <span>Refreshing...</span>}
-      {data.map(post => <div key={post.id}>{post.title}</div>)}
+      {data.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
     </>
   );
 }
@@ -208,12 +221,12 @@ function PostList() {
 
 **v5 status fields**:
 
-| Field | Description |
-|---|---|
-| `isPending` | No data yet (initial load) — replaces `isLoading` from v4 |
-| `isFetching` | Actively fetching (including background refetch) |
-| `isError` / `error` | Request failed |
-| `isSuccess` / `data` | Request succeeded |
+| Field                | Description                                               |
+| -------------------- | --------------------------------------------------------- |
+| `isPending`          | No data yet (initial load) — replaces `isLoading` from v4 |
+| `isFetching`         | Actively fetching (including background refetch)          |
+| `isError` / `error`  | Request failed                                            |
+| `isSuccess` / `data` | Request succeeded                                         |
 
 ### useMutation — Data Mutation + Cache Invalidation
 
@@ -224,14 +237,14 @@ function useCreatePost() {
   return useMutation({
     mutationFn: api.createPost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] }); // trigger refetch
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); // trigger refetch
     },
   });
 }
 
 // Usage
 const { mutate, isPending } = useCreatePost();
-mutate({ title: 'New post', body: '...' });
+mutate({ title: "New post", body: "..." });
 ```
 
 ### Optimistic Update
@@ -243,17 +256,20 @@ function useDeletePost() {
   return useMutation({
     mutationFn: api.deletePost,
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ['posts'] });     // cancel in-flight requests
-      const snapshot = queryClient.getQueryData<Post[]>(['posts']); // save snapshot for rollback
-      queryClient.setQueryData<Post[]>(['posts'], old =>            // optimistically remove item
-        (old ?? []).filter(p => p.id !== id)
+      await queryClient.cancelQueries({ queryKey: ["posts"] }); // cancel in-flight requests
+      const snapshot = queryClient.getQueryData<Post[]>(["posts"]); // save snapshot for rollback
+      queryClient.setQueryData<Post[]>(
+        ["posts"],
+        (
+          old, // optimistically remove item
+        ) => (old ?? []).filter((p) => p.id !== id),
       );
-      return { snapshot };                                          // passed to onError as context
+      return { snapshot }; // passed to onError as context
     },
     onError: (_err, _id, ctx) => {
-      if (ctx?.snapshot) queryClient.setQueryData(['posts'], ctx.snapshot); // rollback on failure
+      if (ctx?.snapshot) queryClient.setQueryData(["posts"], ctx.snapshot); // rollback on failure
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['posts'] }), // sync with server
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["posts"] }), // sync with server
   });
 }
 ```
@@ -262,10 +278,10 @@ function useDeletePost() {
 
 ```typescript
 // ❌ v4 — multiple positional arguments
-useQuery(['todos'], fetchTodos, { staleTime: 5000 });
+useQuery(["todos"], fetchTodos, { staleTime: 5000 });
 
 // ✅ v5 — single options object
-useQuery({ queryKey: ['todos'], queryFn: fetchTodos, staleTime: 5000 });
+useQuery({ queryKey: ["todos"], queryFn: fetchTodos, staleTime: 5000 });
 ```
 
 ---
@@ -278,7 +294,7 @@ useQuery({ queryKey: ['todos'], queryFn: fetchTodos, staleTime: 5000 });
 
 ```typescript
 // stores/useCounterStore.ts
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface CounterState {
   count: number;
@@ -309,9 +325,9 @@ const store = useCounterStore(); // re-renders on ANY state change
 ### Middleware Stack (recommended order)
 
 ```typescript
-import { create } from 'zustand';
-import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+import { create } from "zustand";
+import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 const useAppStore = create<AppState>()(
   devtools(
@@ -319,25 +335,25 @@ const useAppStore = create<AppState>()(
       subscribeWithSelector(
         immer((set, get) => ({
           // state + actions
-        }))
+        })),
       ),
       {
-        name: 'app-storage',
+        name: "app-storage",
         partialize: (state) => ({ user: state.user }), // only persist what's needed
-      }
+      },
     ),
-    { name: 'AppStore' }
-  )
+    { name: "AppStore" },
+  ),
 );
 ```
 
-| Middleware | Purpose |
-|---|---|
-| `devtools` | Redux DevTools integration |
-| `persist` | Persist to localStorage/sessionStorage |
-| `immer` | Direct state mutation (auto-immutable) |
-| `subscribeWithSelector` | Subscribe to specific state slices |
-| `combine` | Auto-infer types from separated state + actions |
+| Middleware              | Purpose                                         |
+| ----------------------- | ----------------------------------------------- |
+| `devtools`              | Redux DevTools integration                      |
+| `persist`               | Persist to localStorage/sessionStorage          |
+| `immer`                 | Direct state mutation (auto-immutable)          |
+| `subscribeWithSelector` | Subscribe to specific state slices              |
+| `combine`               | Auto-infer types from separated state + actions |
 
 ---
 
@@ -349,12 +365,14 @@ const useAppStore = create<AppState>()(
 
 ```typescript
 // schemas/userSchema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const userSchema = z.object({
-  username: z.string().min(3, 'At least 3 characters'),
-  email: z.string().email('Invalid email'),
-  age: z.number({ invalid_type_error: 'Must be a number' }).min(18, 'Must be 18+'),
+  username: z.string().min(3, "At least 3 characters"),
+  email: z.string().email("Invalid email"),
+  age: z
+    .number({ invalid_type_error: "Must be a number" })
+    .min(18, "Must be 18+"),
 });
 
 // TypeScript type auto-inferred from schema
@@ -363,9 +381,9 @@ export type UserFormValues = z.infer<typeof userSchema>;
 
 ```tsx
 // components/UserForm.tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { userSchema, type UserFormValues } from '@/schemas/userSchema';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userSchema, type UserFormValues } from "@/schemas/userSchema";
 
 export function UserForm() {
   const {
@@ -375,8 +393,8 @@ export function UserForm() {
     reset,
   } = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
-    mode: 'onBlur',
-    defaultValues: { username: '', email: '', age: 18 },
+    mode: "onBlur",
+    defaultValues: { username: "", email: "", age: 18 },
   });
 
   const onSubmit = async (data: UserFormValues) => {
@@ -386,17 +404,17 @@ export function UserForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('username')} />
+      <input {...register("username")} />
       {errors.username && <p>{errors.username.message}</p>}
 
-      <input type="email" {...register('email')} />
+      <input type="email" {...register("email")} />
       {errors.email && <p>{errors.email.message}</p>}
 
-      <input type="number" {...register('age', { valueAsNumber: true })} />
+      <input type="number" {...register("age", { valueAsNumber: true })} />
       {errors.age && <p>{errors.age.message}</p>}
 
       <button type="submit" disabled={isSubmitting || !isDirty}>
-        {isSubmitting ? 'Saving...' : 'Save'}
+        {isSubmitting ? "Saving..." : "Save"}
       </button>
     </form>
   );
@@ -405,19 +423,19 @@ export function UserForm() {
 
 ### Validation Modes
 
-| Mode | When validation runs |
-|---|---|
-| `onSubmit` (default) | Only on form submit |
-| `onBlur` | When field loses focus |
-| `onChange` | On every keystroke |
-| `onTouched` | First blur, then onChange |
-| `all` | Both blur and change |
+| Mode                 | When validation runs      |
+| -------------------- | ------------------------- |
+| `onSubmit` (default) | Only on form submit       |
+| `onBlur`             | When field loses focus    |
+| `onChange`           | On every keystroke        |
+| `onTouched`          | First blur, then onChange |
+| `all`                | Both blur and change      |
 
 ### `useFormState` for Isolated Re-renders
 
 ```tsx
 // Subscribe to specific form state in a child component
-import { useFormState } from 'react-hook-form';
+import { useFormState } from "react-hook-form";
 
 function SubmitButton({ control }) {
   const { isSubmitting, isValid } = useFormState({ control });
@@ -470,15 +488,12 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {};
 
 ```tsx
 // useMemo — expensive computations
-const filtered = useMemo(
-  () => items.filter((item) => item.active),
-  [items]
-);
+const filtered = useMemo(() => items.filter((item) => item.active), [items]);
 
 // useCallback — stable function reference
 const handleSave = useCallback(async (id: string) => {
   await api.save(id);
-}, []);  // Only recreated if deps change
+}, []); // Only recreated if deps change
 
 // React.memo — skip re-render if props unchanged
 export const ExpensiveComponent = React.memo(({ data }: Props) => {

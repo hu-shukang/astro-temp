@@ -20,50 +20,50 @@ Unit tests run in `happy-dom` (or `node`) — no real browser, fast execution.
 
 ```typescript
 // tests/unit/utils/formatPrice.test.ts
-import { describe, it, expect } from 'vitest'
-import { formatPrice } from '@/utils/formatPrice'
+import { describe, it, expect } from "vitest";
+import { formatPrice } from "@/utils/formatPrice";
 
-describe('formatPrice', () => {
-  it('formats USD correctly', () => {
-    expect(formatPrice(1500, 'USD')).toBe('$1,500.00')
-  })
+describe("formatPrice", () => {
+  it("formats USD correctly", () => {
+    expect(formatPrice(1500, "USD")).toBe("$1,500.00");
+  });
 
-  it('handles zero', () => {
-    expect(formatPrice(0, 'USD')).toBe('$0.00')
-  })
+  it("handles zero", () => {
+    expect(formatPrice(0, "USD")).toBe("$0.00");
+  });
 
-  it('handles negative values', () => {
-    expect(formatPrice(-500, 'USD')).toBe('-$500.00')
-  })
-})
+  it("handles negative values", () => {
+    expect(formatPrice(-500, "USD")).toBe("-$500.00");
+  });
+});
 ```
 
 ### Testing async functions
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest'
-import { fetchUserProfile } from '@/lib/api'
+import { describe, it, expect, vi } from "vitest";
+import { fetchUserProfile } from "@/lib/api";
 
-vi.mock('@/lib/fetch', () => ({
+vi.mock("@/lib/fetch", () => ({
   get: vi.fn(),
-}))
+}));
 
-describe('fetchUserProfile', () => {
-  it('returns user data on success', async () => {
-    const { get } = await import('@/lib/fetch')
-    vi.mocked(get).mockResolvedValue({ id: '1', name: 'Alice' })
+describe("fetchUserProfile", () => {
+  it("returns user data on success", async () => {
+    const { get } = await import("@/lib/fetch");
+    vi.mocked(get).mockResolvedValue({ id: "1", name: "Alice" });
 
-    const result = await fetchUserProfile('1')
-    expect(result.name).toBe('Alice')
-  })
+    const result = await fetchUserProfile("1");
+    expect(result.name).toBe("Alice");
+  });
 
-  it('throws on 404', async () => {
-    const { get } = await import('@/lib/fetch')
-    vi.mocked(get).mockRejectedValue(new Error('Not Found'))
+  it("throws on 404", async () => {
+    const { get } = await import("@/lib/fetch");
+    vi.mocked(get).mockRejectedValue(new Error("Not Found"));
 
-    await expect(fetchUserProfile('99')).rejects.toThrow('Not Found')
-  })
-})
+    await expect(fetchUserProfile("99")).rejects.toThrow("Not Found");
+  });
+});
 ```
 
 ---
@@ -74,35 +74,35 @@ Use `renderHook` from `vitest-browser-react`:
 
 ```typescript
 // tests/unit/hooks/useCounter.test.ts
-import { renderHook, act } from 'vitest-browser-react'
-import { describe, it, expect } from 'vitest'
-import { useCounter } from '@/hooks/useCounter'
+import { renderHook, act } from "vitest-browser-react";
+import { describe, it, expect } from "vitest";
+import { useCounter } from "@/hooks/useCounter";
 
-describe('useCounter', () => {
-  it('initializes with default value', () => {
-    const { result } = renderHook(() => useCounter())
-    expect(result.current.count).toBe(0)
-  })
+describe("useCounter", () => {
+  it("initializes with default value", () => {
+    const { result } = renderHook(() => useCounter());
+    expect(result.current.count).toBe(0);
+  });
 
-  it('increments count', () => {
-    const { result } = renderHook(() => useCounter(5))
+  it("increments count", () => {
+    const { result } = renderHook(() => useCounter(5));
 
-    act(() => result.current.increment())
+    act(() => result.current.increment());
 
-    expect(result.current.count).toBe(6)
-  })
+    expect(result.current.count).toBe(6);
+  });
 
-  it('resets to initial value', () => {
-    const { result } = renderHook(() => useCounter(10))
+  it("resets to initial value", () => {
+    const { result } = renderHook(() => useCounter(10));
 
     act(() => {
-      result.current.increment()
-      result.current.reset()
-    })
+      result.current.increment();
+      result.current.reset();
+    });
 
-    expect(result.current.count).toBe(10)
-  })
-})
+    expect(result.current.count).toBe(10);
+  });
+});
 ```
 
 ---
@@ -110,13 +110,13 @@ describe('useCounter', () => {
 ## Mocking Environment Variables
 
 ```typescript
-import { it, expect, vi } from 'vitest'
-import { getApiUrl } from '@/config'
+import { it, expect, vi } from "vitest";
+import { getApiUrl } from "@/config";
 
-it('uses PUBLIC_API_URL env var', () => {
-  vi.stubEnv('PUBLIC_API_URL', 'https://api.example.com')
-  expect(getApiUrl()).toBe('https://api.example.com')
-})
+it("uses PUBLIC_API_URL env var", () => {
+  vi.stubEnv("PUBLIC_API_URL", "https://api.example.com");
+  expect(getApiUrl()).toBe("https://api.example.com");
+});
 ```
 
 ---
@@ -124,23 +124,23 @@ it('uses PUBLIC_API_URL env var', () => {
 ## Mocking Time
 
 ```typescript
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { isBusinessHours } from '@/utils/time'
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { isBusinessHours } from "@/utils/time";
 
-describe('isBusinessHours', () => {
-  beforeEach(() => vi.useFakeTimers())
-  afterEach(() => vi.useRealTimers())
+describe("isBusinessHours", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
 
-  it('returns true during business hours', () => {
-    vi.setSystemTime(new Date('2024-03-21T10:00:00'))
-    expect(isBusinessHours()).toBe(true)
-  })
+  it("returns true during business hours", () => {
+    vi.setSystemTime(new Date("2024-03-21T10:00:00"));
+    expect(isBusinessHours()).toBe(true);
+  });
 
-  it('returns false outside business hours', () => {
-    vi.setSystemTime(new Date('2024-03-21T22:00:00'))
-    expect(isBusinessHours()).toBe(false)
-  })
-})
+  it("returns false outside business hours", () => {
+    vi.setSystemTime(new Date("2024-03-21T22:00:00"));
+    expect(isBusinessHours()).toBe(false);
+  });
+});
 ```
 
 ---
@@ -148,16 +148,16 @@ describe('isBusinessHours', () => {
 ## Snapshot Testing
 
 ```typescript
-import { it, expect } from 'vitest'
-import { buildNavItems } from '@/utils/nav'
+import { it, expect } from "vitest";
+import { buildNavItems } from "@/utils/nav";
 
-it('builds nav items correctly', () => {
+it("builds nav items correctly", () => {
   const items = buildNavItems([
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About' },
-  ])
-  expect(items).toMatchSnapshot()
-})
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+  ]);
+  expect(items).toMatchSnapshot();
+});
 ```
 
 ---
@@ -166,16 +166,16 @@ it('builds nav items correctly', () => {
 
 ```typescript
 // Mock entire module
-vi.mock('@/lib/analytics')
+vi.mock("@/lib/analytics");
 
 // Mock with partial implementation
-vi.mock('@/lib/storage', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/storage')>()
+vi.mock("@/lib/storage", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/storage")>();
   return {
     ...actual,
     saveItem: vi.fn(),
-  }
-})
+  };
+});
 ```
 
 ---
@@ -183,23 +183,23 @@ vi.mock('@/lib/storage', async (importOriginal) => {
 ## Testing Zod Schemas
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { ContactSchema } from '@/schemas/contact'
+import { describe, it, expect } from "vitest";
+import { ContactSchema } from "@/schemas/contact";
 
-describe('ContactSchema', () => {
-  it('validates a correct contact', () => {
+describe("ContactSchema", () => {
+  it("validates a correct contact", () => {
     const result = ContactSchema.safeParse({
-      name: 'Alice',
-      email: 'alice@example.com',
-      message: 'Hello',
-    })
-    expect(result.success).toBe(true)
-  })
+      name: "Alice",
+      email: "alice@example.com",
+      message: "Hello",
+    });
+    expect(result.success).toBe(true);
+  });
 
-  it('rejects missing email', () => {
-    const result = ContactSchema.safeParse({ name: 'Alice' })
-    expect(result.success).toBe(false)
-    expect(result.error?.issues[0].path).toContain('email')
-  })
-})
+  it("rejects missing email", () => {
+    const result = ContactSchema.safeParse({ name: "Alice" });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toContain("email");
+  });
+});
 ```

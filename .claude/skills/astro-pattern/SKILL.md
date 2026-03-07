@@ -8,6 +8,7 @@ description: Best practices, patterns, and implementation guidance for building 
 Comprehensive guidance for building with Astro (v5+). Covers project structure, content collections, islands architecture, routing, SSR/SSG, TypeScript, integrations, and deployment.
 
 > **Reference files**: For detailed examples, see `references/` directory:
+>
 > - `content-collections.md` — Content Collections (v5 API)
 > - `islands-and-components.md` — Islands Architecture & Client Directives
 > - `routing-and-rendering.md` — Routing, SSR/SSG, API Endpoints
@@ -37,27 +38,29 @@ my-astro-project/
 ## Configuration (`astro.config.mjs`)
 
 ```typescript
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
+import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: 'https://example.com',
-  output: 'static',        // 'static' | 'server' | 'hybrid'
+  site: "https://example.com",
+  output: "static", // 'static' | 'server' | 'hybrid'
   integrations: [react(), mdx(), sitemap()],
   vite: {
-    plugins: [],           // Custom Vite plugins
+    plugins: [], // Custom Vite plugins
   },
 });
 ```
 
 **Output modes:**
+
 - `static` (default) — Full SSG, pre-render all pages at build time
 - `server` — Full SSR, render all pages on demand (requires adapter)
 - `hybrid` — Mix: SSR by default, opt-in to pre-rendering with `export const prerender = true`
 
 **Common adapters for SSR:**
+
 ```bash
 npx astro add netlify   # Netlify adapter
 npx astro add vercel    # Vercel adapter
@@ -73,16 +76,16 @@ Components have two parts: a **frontmatter script** (server-only) and an **HTML 
 ```astro
 ---
 // Frontmatter: runs on the server only (or at build time)
-import MyComponent from '../components/MyComponent.astro';
-import { getCollection } from 'astro:content';
+import MyComponent from "../components/MyComponent.astro";
+import { getCollection } from "astro:content";
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = 'Default description' } = Astro.props;
-const posts = await getCollection('blog');
+const { title, description = "Default description" } = Astro.props;
+const posts = await getCollection("blog");
 ---
 
 <!-- Template: HTML with embedded expressions -->
@@ -94,30 +97,36 @@ const posts = await getCollection('blog');
   <body>
     <MyComponent />
     <ul>
-      {posts.map(post => (
-        <li><a href={`/blog/${post.id}`}>{post.data.title}</a></li>
-      ))}
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}`}>{post.data.title}</a>
+          </li>
+        ))
+      }
     </ul>
   </body>
 </html>
 
 <style>
   /* Scoped CSS — only applies to this component */
-  h1 { color: oklch(50% 0.2 240); }
+  h1 {
+    color: oklch(50% 0.2 240);
+  }
 </style>
 ```
 
 **Key `Astro` global object:**
 
-| Property | Description |
-|---|---|
-| `Astro.props` | Component props |
-| `Astro.params` | Dynamic route parameters |
-| `Astro.request` | Request object (SSR) |
-| `Astro.cookies` | Cookie API |
-| `Astro.url` | Current page URL |
-| `Astro.redirect(url)` | Server-side redirect |
-| `Astro.rewrite(url)` | Server-side rewrite |
+| Property              | Description              |
+| --------------------- | ------------------------ |
+| `Astro.props`         | Component props          |
+| `Astro.params`        | Dynamic route parameters |
+| `Astro.request`       | Request object (SSR)     |
+| `Astro.cookies`       | Cookie API               |
+| `Astro.url`           | Current page URL         |
+| `Astro.redirect(url)` | Server-side redirect     |
+| `Astro.rewrite(url)`  | Server-side rewrite      |
 
 ---
 
@@ -131,8 +140,8 @@ const posts = await getCollection('blog');
   "compilerOptions": {
     "paths": {
       "@components/*": ["./src/components/*"],
-      "@layouts/*":    ["./src/layouts/*"],
-      "@assets/*":     ["./src/assets/*"]
+      "@layouts/*": ["./src/layouts/*"],
+      "@assets/*": ["./src/assets/*"]
     }
   }
 }
@@ -150,11 +159,11 @@ Strictness options: `"astro/tsconfigs/base"`, `"astro/tsconfigs/strict"`, `"astr
 
 ```typescript
 // src/content.config.ts
-import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 const blog = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/blog' }),
+  loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: "./src/content/blog" }),
   schema: z.object({
     title: z.string(),
     pubDate: z.coerce.date(),
@@ -168,13 +177,13 @@ export const collections = { blog };
 
 ```typescript
 // In page component
-import { getCollection, getEntry, render } from 'astro:content';
+import { getCollection, getEntry, render } from "astro:content";
 
 // Get all (filter drafts)
-const posts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = await getCollection("blog", ({ data }) => !data.draft);
 
 // Get single entry
-const post = await getEntry('blog', 'my-post-id');
+const post = await getEntry("blog", "my-post-id");
 const { Content, headings } = await render(post);
 ```
 
@@ -188,21 +197,22 @@ const { Content, headings } = await render(post);
 
 Astro renders everything as static HTML by default. Add interactivity with `client:*` directives:
 
-| Directive | When it hydrates | Use case |
-|---|---|---|
-| `client:load` | Immediately on page load | High-priority interactive UI |
-| `client:idle` | After `requestIdleCallback` | Lower-priority UI |
-| `client:visible` | When entering viewport | Below-the-fold content |
-| `client:media="(query)"` | When CSS media query matches | Responsive components |
-| `client:only="framework"` | Immediately, skip SSR | Browser-only components |
-| `server:defer` | Server island (deferred SSR) | Personalized server content |
+| Directive                 | When it hydrates             | Use case                     |
+| ------------------------- | ---------------------------- | ---------------------------- |
+| `client:load`             | Immediately on page load     | High-priority interactive UI |
+| `client:idle`             | After `requestIdleCallback`  | Lower-priority UI            |
+| `client:visible`          | When entering viewport       | Below-the-fold content       |
+| `client:media="(query)"`  | When CSS media query matches | Responsive components        |
+| `client:only="framework"` | Immediately, skip SSR        | Browser-only components      |
+| `server:defer`            | Server island (deferred SSR) | Personalized server content  |
 
 ```astro
 ---
-import Counter from '../components/Counter.tsx';
-import HeavyChart from '../components/HeavyChart.tsx';
-import Avatar from '../components/Avatar.astro';
+import Counter from "../components/Counter.tsx";
+import HeavyChart from "../components/HeavyChart.tsx";
+import Avatar from "../components/Avatar.astro";
 ---
+
 <Counter client:load />
 <HeavyChart client:visible />
 <Avatar server:defer>
@@ -240,11 +250,13 @@ src/pages/
 ```astro
 ---
 // src/pages/index.astro
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
+
 <BaseLayout title="Home">
   <h1>Welcome</h1>
-  <slot />  <!-- content goes here in layout -->
+  <slot />
+  <!-- content goes here in layout -->
 </BaseLayout>
 ```
 
@@ -252,9 +264,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import heroImage from '../assets/hero.jpg';
+import { Image } from "astro:assets";
+import heroImage from "../assets/hero.jpg";
 ---
+
 <Image src={heroImage} alt="Hero" width={800} height={400} format="webp" />
 ```
 
@@ -272,8 +285,9 @@ const publicKey = import.meta.env.PUBLIC_ANALYTICS_ID;
 
 ```astro
 ---
-import { ClientRouter } from 'astro:transitions';  // v5: renamed from ViewTransitions
+import { ClientRouter } from "astro:transitions"; // v5: renamed from ViewTransitions
 ---
+
 <head>
   <ClientRouter />
 </head>
@@ -295,15 +309,15 @@ Type-safe backend functions that replace boilerplate API endpoints — Zod valid
 
 ```typescript
 // src/actions/index.ts
-import { defineAction, ActionError } from 'astro:actions';
-import { z } from 'astro/zod';
+import { defineAction, ActionError } from "astro:actions";
+import { z } from "astro/zod";
 
 export const server = {
   likePost: defineAction({
     input: z.object({ postId: z.string() }),
     handler: async (input, context) => {
       if (!context.locals.user) {
-        throw new ActionError({ code: 'UNAUTHORIZED' });
+        throw new ActionError({ code: "UNAUTHORIZED" });
       }
       return await db.likePost(input.postId);
     },
@@ -314,25 +328,27 @@ export const server = {
 **Calling from the client:**
 
 ```typescript
-import { actions } from 'astro:actions';
+import { actions } from "astro:actions";
 
-const { data, error } = await actions.likePost({ postId: '123' });
-if (error?.code === 'UNAUTHORIZED') { /* handle */ }
+const { data, error } = await actions.likePost({ postId: "123" });
+if (error?.code === "UNAUTHORIZED") {
+  /* handle */
+}
 ```
 
 **Quick reference:**
 
-| Feature | Syntax |
-|---|---|
-| JSON input validation | `input: z.object({...})` |
-| Accept form data | `accept: 'form'` |
-| Throw error | `throw new ActionError({ code: 'NOT_FOUND' })` |
-| Skip error wrapper | `await actions.foo.orThrow(input)` |
-| HTML form submission | `<form method="POST" action={actions.foo}>` |
-| Read form result | `Astro.getActionResult(actions.foo)` |
-| Call from server | `Astro.callAction(actions.foo, input)` |
-| Middleware gating | `getActionContext(context)` |
-| Field-level errors | `isInputError(error)` → `error.fields` |
+| Feature               | Syntax                                         |
+| --------------------- | ---------------------------------------------- |
+| JSON input validation | `input: z.object({...})`                       |
+| Accept form data      | `accept: 'form'`                               |
+| Throw error           | `throw new ActionError({ code: 'NOT_FOUND' })` |
+| Skip error wrapper    | `await actions.foo.orThrow(input)`             |
+| HTML form submission  | `<form method="POST" action={actions.foo}>`    |
+| Read form result      | `Astro.getActionResult(actions.foo)`           |
+| Call from server      | `Astro.callAction(actions.foo, input)`         |
+| Middleware gating     | `getActionContext(context)`                    |
+| Field-level errors    | `isInputError(error)` → `error.fields`         |
 
 ---
 
@@ -341,7 +357,7 @@ if (error?.code === 'UNAUTHORIZED') { /* handle */ }
 ```bash
 # Auto-install with astro add
 npx astro add react        # React support
-npx astro add vue          # Vue support  
+npx astro add vue          # Vue support
 npx astro add tailwind     # Tailwind CSS
 npx astro add mdx          # MDX support
 npx astro add sitemap      # Sitemap generation
@@ -349,12 +365,13 @@ npx astro add db           # Astro DB (SQLite)
 ```
 
 Multiple JSX frameworks require `include` scoping:
+
 ```typescript
 integrations: [
-  react({ include: ['**/react/*'] }),
-  preact({ include: ['**/preact/*'] }),
-  solid({ include: ['**/solid/*'] }),
-]
+  react({ include: ["**/react/*"] }),
+  preact({ include: ["**/preact/*"] }),
+  solid({ include: ["**/solid/*"] }),
+];
 ```
 
 ---
@@ -373,10 +390,10 @@ integrations: [
 
 ## Key v5 Migration Notes
 
-| v4 | v5 |
-|---|---|
-| `post.slug` | `post.id` |
-| `type: 'content'` in `defineCollection` | Use `loader:` instead |
-| `ViewTransitions` from `astro:transitions` | `ClientRouter` |
-| `src/content/config.ts` | `src/content.config.ts` |
-| `import.meta.glob()` for content | `getCollection()` with loader |
+| v4                                         | v5                            |
+| ------------------------------------------ | ----------------------------- |
+| `post.slug`                                | `post.id`                     |
+| `type: 'content'` in `defineCollection`    | Use `loader:` instead         |
+| `ViewTransitions` from `astro:transitions` | `ClientRouter`                |
+| `src/content/config.ts`                    | `src/content.config.ts`       |
+| `import.meta.glob()` for content           | `getCollection()` with loader |

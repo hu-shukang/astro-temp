@@ -4,7 +4,7 @@
 
 ```typescript
 // hooks/useData.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function useData<T>(url: string | null) {
   const [data, setData] = useState<T | null>(null);
@@ -36,7 +36,9 @@ function useData<T>(url: string | null) {
         }
       });
 
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [url]);
 
   return { data, loading, error };
@@ -48,24 +50,24 @@ function useData<T>(url: string | null) {
 Prefer `useSyncExternalStore` over `useEffect + useState` for subscribing to external stores:
 
 ```typescript
-import { useSyncExternalStore, useDebugValue } from 'react';
+import { useSyncExternalStore, useDebugValue } from "react";
 
 function subscribe(callback: () => void) {
-  window.addEventListener('online', callback);
-  window.addEventListener('offline', callback);
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
   return () => {
-    window.removeEventListener('online', callback);
-    window.removeEventListener('offline', callback);
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
   };
 }
 
 export function useOnlineStatus() {
   const isOnline = useSyncExternalStore(
     subscribe,
-    () => navigator.onLine,  // client snapshot
-    () => true               // server snapshot (SSR)
+    () => navigator.onLine, // client snapshot
+    () => true, // server snapshot (SSR)
   );
-  useDebugValue(isOnline ? 'Online' : 'Offline');
+  useDebugValue(isOnline ? "Online" : "Offline");
   return isOnline;
 }
 ```
@@ -75,7 +77,7 @@ export function useOnlineStatus() {
 Use `useEffectEvent` (experimental) or wrap callback in ref to avoid resetting intervals:
 
 ```typescript
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from "react";
 
 export function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
@@ -96,11 +98,11 @@ export function useInterval(callback: () => void, delay: number | null) {
 ## Custom Hook: Intersection Observer
 
 ```typescript
-import { useState, useEffect, RefObject } from 'react';
+import { useState, useEffect, RefObject } from "react";
 
 export function useIntersectionObserver(
   ref: RefObject<Element>,
-  options?: IntersectionObserverInit
+  options?: IntersectionObserverInit,
 ) {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
@@ -108,9 +110,12 @@ export function useIntersectionObserver(
     const el = ref.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsIntersecting(entry.isIntersecting);
-    }, { threshold: 1.0, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsIntersecting(entry.isIntersecting);
+      },
+      { threshold: 1.0, ...options },
+    );
 
     observer.observe(el);
     return () => observer.disconnect();
@@ -123,7 +128,7 @@ export function useIntersectionObserver(
 ## Custom Hook: Debounce
 
 ```typescript
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -140,11 +145,13 @@ export function useDebounce<T>(value: T, delay: number): T {
 ## Custom Hook: Previous Value
 
 ```typescript
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 
 export function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>();
-  useEffect(() => { ref.current = value; }, [value]);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
   return ref.current;
 }
 ```
@@ -154,16 +161,22 @@ export function usePrevious<T>(value: T): T | undefined {
 ```tsx
 // ❌ No ignore flag — race condition risk
 useEffect(() => {
-  fetch('/api/data').then(res => res.json()).then(setData);
+  fetch("/api/data")
+    .then((res) => res.json())
+    .then(setData);
 }, [id]);
 
 // ✅ With ignore flag
 useEffect(() => {
   let ignore = false;
-  fetch('/api/data').then(res => res.json()).then(data => {
-    if (!ignore) setData(data);
-  });
-  return () => { ignore = true; };
+  fetch("/api/data")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!ignore) setData(data);
+    });
+  return () => {
+    ignore = true;
+  };
 }, [id]);
 
 // ❌ Hook inside useMemo (violates Rules of Hooks)
@@ -180,7 +193,7 @@ const style = useMemo(() => createStyle(theme), [theme]);
 ## React 19: use() Hook
 
 ```tsx
-import { use } from 'react';
+import { use } from "react";
 
 // Can be called AFTER early returns (unlike useContext)
 function Heading({ children }: { children?: React.ReactNode }) {
@@ -201,25 +214,25 @@ function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
 ## React 19: useOptimistic
 
 ```tsx
-import { useOptimistic } from 'react';
+import { useOptimistic } from "react";
 
 function TodoList({ todos }: { todos: Todo[] }) {
   const [optimisticTodos, addOptimisticTodo] = useOptimistic(
     todos,
-    (state: Todo[], newTodo: Todo) => [...state, newTodo]
+    (state: Todo[], newTodo: Todo) => [...state, newTodo],
   );
 
   async function addTodo(text: string) {
     const tempTodo = { id: Date.now(), text, pending: true };
-    addOptimisticTodo(tempTodo);        // immediate UI update
-    await api.createTodo(text);         // actual server call
+    addOptimisticTodo(tempTodo); // immediate UI update
+    await api.createTodo(text); // actual server call
     // on success: real data from server replaces optimistic state
     // on error: optimistic state automatically reverts
   }
 
   return (
     <ul>
-      {optimisticTodos.map(todo => (
+      {optimisticTodos.map((todo) => (
         <li key={todo.id} style={{ opacity: todo.pending ? 0.5 : 1 }}>
           {todo.text}
         </li>

@@ -28,12 +28,12 @@ src/pages/
 ```astro
 ---
 // src/pages/blog/[slug].astro
-import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
-import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const posts = await getCollection('blog');
-  return posts.map(post => ({
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
   }));
@@ -43,6 +43,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { post } = Astro.props;
 const { Content } = await render(post);
 ---
+
 <h1>{post.data.title}</h1>
 <Content />
 ```
@@ -66,16 +67,17 @@ const { slug } = Astro.params;
 ---
 // src/pages/blog/[slug].astro
 // In SSR mode — no getStaticPaths needed
-import { getEntry, render } from 'astro:content';
+import { getEntry, render } from "astro:content";
 
 const { slug } = Astro.params;
-if (!slug) return Astro.redirect('/404');
+if (!slug) return Astro.redirect("/404");
 
-const post = await getEntry('blog', slug);
-if (!post) return Astro.redirect('/404');
+const post = await getEntry("blog", slug);
+if (!post) return Astro.redirect("/404");
 
 const { Content } = await render(post);
 ---
+
 <h1>{post.data.title}</h1>
 <Content />
 ```
@@ -115,36 +117,37 @@ export const prerender = false; // This page is server-rendered
 
 ```typescript
 // src/pages/api/posts.ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, url }) => {
-  const tag = url.searchParams.get('tag');
+  const tag = url.searchParams.get("tag");
 
-  return new Response(
-    JSON.stringify({ posts: [] }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ posts: [] }), {
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
 
   if (!body.title) {
-    return new Response(
-      JSON.stringify({ error: 'Title is required' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: "Title is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  return new Response(
-    JSON.stringify({ id: crypto.randomUUID(), ...body }),
-    { status: 201, headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ id: crypto.randomUUID(), ...body }), {
+    status: 201,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 // Handle all methods
 export const ALL: APIRoute = async ({ request }) => {
-  return new Response(`Method ${request.method} not supported`, { status: 405 });
+  return new Response(`Method ${request.method} not supported`, {
+    status: 405,
+  });
 };
 ```
 
@@ -152,20 +155,20 @@ export const ALL: APIRoute = async ({ request }) => {
 
 ```typescript
 // src/pages/api/posts/[id].ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ params }) => {
   const { id } = params;
   // fetch data by id...
   return new Response(JSON.stringify({ id }), {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 };
 
 export const DELETE: APIRoute = async ({ params, redirect }) => {
   const { id } = params;
   // delete logic...
-  return redirect('/posts', 303);
+  return redirect("/posts", 303);
 };
 ```
 
@@ -179,11 +182,11 @@ export const DELETE: APIRoute = async ({ params, redirect }) => {
 // astro.config.mjs
 export default defineConfig({
   redirects: {
-    '/old-path': '/new-path',
-    '/blog/[slug]': '/posts/[slug]',      // Dynamic redirect
-    '/old': {
+    "/old-path": "/new-path",
+    "/blog/[slug]": "/posts/[slug]", // Dynamic redirect
+    "/old": {
       status: 301,
-      destination: '/new',
+      destination: "/new",
     },
   },
 });
@@ -193,8 +196,8 @@ export default defineConfig({
 
 ```astro
 ---
-const user = await getUser(Astro.cookies.get('session')?.value);
-if (!user) return Astro.redirect('/login', 302);
+const user = await getUser(Astro.cookies.get("session")?.value);
+if (!user) return Astro.redirect("/login", 302);
 ---
 ```
 
@@ -204,18 +207,18 @@ if (!user) return Astro.redirect('/login', 302);
 
 ```typescript
 // src/middleware.ts
-import type { MiddlewareHandler } from 'astro';
-import { defineMiddleware } from 'astro:middleware';
+import type { MiddlewareHandler } from "astro";
+import { defineMiddleware } from "astro:middleware";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, cookies, redirect } = context;
 
   // Auth check example
-  const session = cookies.get('session');
-  const isProtected = new URL(request.url).pathname.startsWith('/dashboard');
+  const session = cookies.get("session");
+  const isProtected = new URL(request.url).pathname.startsWith("/dashboard");
 
   if (isProtected && !session) {
-    return redirect('/login');
+    return redirect("/login");
   }
 
   // Add data to locals (available in all pages/endpoints)
@@ -225,7 +228,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next();
 
   // Optionally modify response
-  response.headers.set('X-Custom-Header', 'my-value');
+  response.headers.set("X-Custom-Header", "my-value");
   return response;
 });
 ```
@@ -247,8 +250,9 @@ declare namespace App {
 ```astro
 ---
 const { user } = Astro.locals;
-if (!user) return Astro.redirect('/login');
+if (!user) return Astro.redirect("/login");
 ---
+
 <p>Welcome, {user.name}!</p>
 ```
 
@@ -259,21 +263,21 @@ if (!user) return Astro.redirect('/login');
 ```astro
 ---
 // Set cookie
-Astro.cookies.set('session', token, {
+Astro.cookies.set("session", token, {
   httpOnly: true,
   secure: import.meta.env.PROD,
-  sameSite: 'lax',
-  maxAge: 60 * 60 * 24 * 7,  // 1 week
-  path: '/',
+  sameSite: "lax",
+  maxAge: 60 * 60 * 24 * 7, // 1 week
+  path: "/",
 });
 
 // Get cookie
-const session = Astro.cookies.get('session');
+const session = Astro.cookies.get("session");
 const token = session?.value;
 const data = session?.json<{ userId: string }>();
 
 // Delete cookie
-Astro.cookies.delete('session', { path: '/' });
+Astro.cookies.delete("session", { path: "/" });
 ---
 ```
 
@@ -284,33 +288,31 @@ Astro.cookies.delete('session', { path: '/' });
 ```astro
 ---
 // src/pages/blog/[page].astro  (or [...page] for optional)
-import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
   posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return paginate(posts, {
     pageSize: 10,
-    params: {},        // Additional route params
+    params: {}, // Additional route params
   });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
 ---
-<!-- page.data: current page entries -->
-<!-- page.currentPage: 1-indexed page number -->
-<!-- page.totalPages: total number of pages -->
-<!-- page.url.prev: previous page URL or undefined -->
-<!-- page.url.next: next page URL or undefined -->
-<!-- page.url.first: first page URL -->
-<!-- page.url.last: last page URL -->
 
+<!-- page.data: current page entries --><!-- page.currentPage: 1-indexed page number --><!-- page.totalPages: total number of pages --><!-- page.url.prev: previous page URL or undefined --><!-- page.url.next: next page URL or undefined --><!-- page.url.first: first page URL --><!-- page.url.last: last page URL -->
 <ul>
-  {page.data.map(post => (
-    <li><a href={`/blog/${post.id}`}>{post.data.title}</a></li>
-  ))}
+  {
+    page.data.map((post) => (
+      <li>
+        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+      </li>
+    ))
+  }
 </ul>
 
 <nav>
@@ -326,14 +328,14 @@ const { page } = Astro.props;
 
 ```typescript
 // astro.config.mjs
-import sitemap from '@astrojs/sitemap';
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: 'https://example.com',
+  site: "https://example.com",
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/admin/'),
-      changefreq: 'weekly',
+      filter: (page) => !page.includes("/admin/"),
+      changefreq: "weekly",
       priority: 0.7,
     }),
   ],
@@ -342,18 +344,18 @@ export default defineConfig({
 
 ```typescript
 // src/pages/rss.xml.ts
-import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
-import type { APIRoute } from 'astro';
+import rss from "@astrojs/rss";
+import { getCollection } from "astro:content";
+import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ site }) => {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
 
   return rss({
-    title: 'My Blog',
-    description: 'My blog description',
+    title: "My Blog",
+    description: "My blog description",
     site: site!,
-    items: posts.map(post => ({
+    items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
@@ -369,8 +371,8 @@ export const GET: APIRoute = async ({ site }) => {
 
 ```astro
 ---
-import { Image, Picture, getImage } from 'astro:assets';
-import heroImage from '../assets/hero.jpg';
+import { Image, Picture, getImage } from "astro:assets";
+import heroImage from "../assets/hero.jpg";
 ---
 
 <!-- Optimized image -->
@@ -389,7 +391,7 @@ import heroImage from '../assets/hero.jpg';
   alt="Hero"
   widths={[400, 800, 1200]}
   sizes="(max-width: 800px) 100vw, 800px"
-  formats={['avif', 'webp']}
+  formats={["avif", "webp"]}
 />
 
 <!-- Remote images -->
@@ -407,7 +409,7 @@ import heroImage from '../assets/hero.jpg';
 const optimized = await getImage({
   src: heroImage,
   width: 800,
-  format: 'webp',
+  format: "webp",
 });
 // optimized.src, optimized.attributes
 ```

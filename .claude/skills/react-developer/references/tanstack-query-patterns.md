@@ -11,14 +11,14 @@ npm install @tanstack/react-query-devtools  # recommended for development
 
 ```tsx
 // lib/queryClient.ts
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,                      // retry once on failure
-      staleTime: 1000 * 60,          // data stays fresh for 1 minute
-      refetchOnWindowFocus: true,    // refetch when tab regains focus
+      retry: 1, // retry once on failure
+      staleTime: 1000 * 60, // data stays fresh for 1 minute
+      refetchOnWindowFocus: true, // refetch when tab regains focus
     },
   },
 });
@@ -26,15 +26,16 @@ export const queryClient = new QueryClient({
 
 ```tsx
 // main.tsx
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { queryClient } from '@/lib/queryClient';
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "@/lib/queryClient";
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <YourApp />
-      <ReactQueryDevtools initialIsOpen={false} /> {/* dev-only debugging tool */}
+      <ReactQueryDevtools initialIsOpen={false} />{" "}
+      {/* dev-only debugging tool */}
     </QueryClientProvider>
   );
 }
@@ -46,7 +47,7 @@ export default function App() {
 
 ```typescript
 // lib/api.ts
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${url}`, init);
@@ -55,19 +56,20 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  getPosts: () => fetchJson<Post[]>('/posts'),
+  getPosts: () => fetchJson<Post[]>("/posts"),
   getPost: (id: number) => fetchJson<Post>(`/posts/${id}`),
   createPost: (body: CreatePostInput) =>
-    fetchJson<Post>('/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetchJson<Post>("/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     }),
-  deletePost: (id: number) => fetchJson<void>(`/posts/${id}`, { method: 'DELETE' }),
+  deletePost: (id: number) =>
+    fetchJson<void>(`/posts/${id}`, { method: "DELETE" }),
   updatePost: (id: number, body: Partial<Post>) =>
     fetchJson<Post>(`/posts/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     }),
 };
@@ -79,22 +81,22 @@ export const api = {
 
 ```typescript
 // queries/postQueries.ts
-import { queryOptions } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { queryOptions } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export const postQueries = {
   // list query
   list: () =>
     queryOptions({
-      queryKey: ['posts'],
+      queryKey: ["posts"],
       queryFn: api.getPosts,
-      staleTime: 1000 * 60 * 5,      // fresh for 5 minutes
+      staleTime: 1000 * 60 * 5, // fresh for 5 minutes
     }),
 
   // detail query (disabled when id is invalid)
   detail: (id: number) =>
     queryOptions({
-      queryKey: ['posts', id],
+      queryKey: ["posts", id],
       queryFn: () => api.getPost(id),
       enabled: id > 0,
       staleTime: 1000 * 60 * 2,
@@ -103,7 +105,7 @@ export const postQueries = {
   // query with filter params
   filtered: (filter: { userId?: number; limit?: number }) =>
     queryOptions({
-      queryKey: ['posts', 'filtered', filter],
+      queryKey: ["posts", "filtered", filter],
       queryFn: () => api.getFilteredPosts(filter),
     }),
 };
@@ -121,31 +123,31 @@ const posts = queryClient.getQueryData(postQueries.list().queryKey);
 
 ```typescript
 const {
-  data,           // resolved data on success
-  error,          // error object on failure
-  isPending,      // no data yet (initial load) — replaces isLoading from v4
-  isFetching,     // actively fetching (including background refetch)
-  isError,        // true when request failed
-  isSuccess,      // true when request succeeded
-  isStale,        // true when data is past staleTime
-  refetch,        // manually trigger a refetch
-  status,         // 'pending' | 'error' | 'success'
-  fetchStatus,    // 'fetching' | 'paused' | 'idle'
+  data, // resolved data on success
+  error, // error object on failure
+  isPending, // no data yet (initial load) — replaces isLoading from v4
+  isFetching, // actively fetching (including background refetch)
+  isError, // true when request failed
+  isSuccess, // true when request succeeded
+  isStale, // true when data is past staleTime
+  refetch, // manually trigger a refetch
+  status, // 'pending' | 'error' | 'success'
+  fetchStatus, // 'fetching' | 'paused' | 'idle'
 } = useQuery({
-  queryKey: ['posts', id],
+  queryKey: ["posts", id],
   queryFn: () => api.getPost(id),
 
   // === common options ===
-  enabled: id > 0,              // skip the request when false (Dependent Query)
-  staleTime: 1000 * 60,         // how long data stays fresh (ms); 0 = stale immediately
-  gcTime: 1000 * 60 * 5,        // how long unused cache is kept; default 5 minutes
-  refetchInterval: 30000,       // polling interval (ms); false = no polling
-  refetchOnWindowFocus: true,   // refetch when the window regains focus
-  retry: 3,                     // number of retry attempts on failure
+  enabled: id > 0, // skip the request when false (Dependent Query)
+  staleTime: 1000 * 60, // how long data stays fresh (ms); 0 = stale immediately
+  gcTime: 1000 * 60 * 5, // how long unused cache is kept; default 5 minutes
+  refetchInterval: 30000, // polling interval (ms); false = no polling
+  refetchOnWindowFocus: true, // refetch when the window regains focus
+  retry: 3, // number of retry attempts on failure
   retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000), // exponential backoff
 
   // select — transform or filter data to reduce re-renders
-  select: (data) => data.filter(p => p.active),
+  select: (data) => data.filter((p) => p.active),
 
   // placeholderData — show previous data while new data loads
   placeholderData: (previousData) => previousData, // keeps old data visible during param changes
@@ -160,16 +162,16 @@ const {
 function UserPosts({ userId }: { userId: number | undefined }) {
   // first query
   const { data: user } = useQuery({
-    queryKey: ['user', userId],
+    queryKey: ["user", userId],
     queryFn: () => api.getUser(userId!),
     enabled: !!userId,
   });
 
   // second query depends on the first result
   const { data: posts } = useQuery({
-    queryKey: ['posts', 'by-user', user?.id],
+    queryKey: ["posts", "by-user", user?.id],
     queryFn: () => api.getPostsByUser(user!.id),
-    enabled: !!user,   // does not run until user is available
+    enabled: !!user, // does not run until user is available
   });
 }
 ```
@@ -180,14 +182,14 @@ function UserPosts({ userId }: { userId: number | undefined }) {
 
 ```typescript
 const {
-  mutate,         // fire-and-forget trigger
-  mutateAsync,    // returns a Promise — can be awaited
-  isPending,      // true while mutation is running
-  isSuccess,      // true after successful completion
-  isError,        // true after failure
-  error,          // error object on failure
-  data,           // return value on success
-  reset,          // reset mutation state back to idle
+  mutate, // fire-and-forget trigger
+  mutateAsync, // returns a Promise — can be awaited
+  isPending, // true while mutation is running
+  isSuccess, // true after successful completion
+  isError, // true after failure
+  error, // error object on failure
+  data, // return value on success
+  reset, // reset mutation state back to idle
 } = useMutation({
   mutationFn: api.createPost,
 
@@ -204,12 +206,12 @@ const {
   onSettled: (data, error, variables, context) => {
     // called regardless of success or failure (use for invalidation)
   },
-  retry: 0,       // mutations do not retry by default
+  retry: 0, // mutations do not retry by default
 });
 
 // Usage
-mutate(variables);                          // fire-and-forget
-await mutateAsync(variables);               // await the result
+mutate(variables); // fire-and-forget
+await mutateAsync(variables); // await the result
 mutate(variables, { onSuccess: () => {} }); // per-call callback override
 ```
 
@@ -227,14 +229,14 @@ export function useDeletePost() {
 
     onMutate: async (deletedId: number) => {
       // 1. cancel any in-flight refetches to avoid overwriting optimistic state
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({ queryKey: ["posts"] });
 
       // 2. snapshot current cache for rollback
-      const snapshot = queryClient.getQueryData<Post[]>(['posts']);
+      const snapshot = queryClient.getQueryData<Post[]>(["posts"]);
 
       // 3. optimistically update the cache
-      queryClient.setQueryData<Post[]>(['posts'], (old = []) =>
-        old.filter(p => p.id !== deletedId)
+      queryClient.setQueryData<Post[]>(["posts"], (old = []) =>
+        old.filter((p) => p.id !== deletedId),
       );
 
       // 4. return snapshot so onError can roll back
@@ -244,13 +246,13 @@ export function useDeletePost() {
     onError: (_err, _deletedId, context) => {
       // roll back to the snapshot on failure
       if (context?.snapshot) {
-        queryClient.setQueryData(['posts'], context.snapshot);
+        queryClient.setQueryData(["posts"], context.snapshot);
       }
     },
 
     onSettled: () => {
       // always invalidate after settle to ensure consistency with the server
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
 }
@@ -264,25 +266,25 @@ export function useDeletePost() {
 const queryClient = useQueryClient();
 
 // read from cache
-const posts = queryClient.getQueryData<Post[]>(['posts']);
+const posts = queryClient.getQueryData<Post[]>(["posts"]);
 
 // write to cache (no network request)
-queryClient.setQueryData<Post[]>(['posts'], (old = []) => [...old, newPost]);
+queryClient.setQueryData<Post[]>(["posts"], (old = []) => [...old, newPost]);
 
 // invalidate cache (triggers a refetch)
-queryClient.invalidateQueries({ queryKey: ['posts'] });
+queryClient.invalidateQueries({ queryKey: ["posts"] });
 
 // invalidate a single entry by ID
-queryClient.invalidateQueries({ queryKey: ['posts', postId] });
+queryClient.invalidateQueries({ queryKey: ["posts", postId] });
 
 // invalidate all queries matching a key prefix
-queryClient.invalidateQueries({ queryKey: ['posts'], exact: false });
+queryClient.invalidateQueries({ queryKey: ["posts"], exact: false });
 
 // prefetch before the user navigates to the page
 await queryClient.prefetchQuery(postQueries.detail(id));
 
 // cancel in-flight requests
-await queryClient.cancelQueries({ queryKey: ['posts'] });
+await queryClient.cancelQueries({ queryKey: ["posts"] });
 ```
 
 ---
@@ -291,22 +293,22 @@ await queryClient.cancelQueries({ queryKey: ['posts'] });
 
 ```typescript
 // queries/postMutations.ts
-import { mutationOptions } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { mutationOptions } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export const postMutations = {
   create: (queryClient: QueryClient) =>
     mutationOptions({
-      mutationKey: ['posts', 'create'],
+      mutationKey: ["posts", "create"],
       mutationFn: api.createPost,
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: ['posts'] }),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
     }),
 
   delete: (queryClient: QueryClient) =>
     mutationOptions({
-      mutationKey: ['posts', 'delete'],
+      mutationKey: ["posts", "delete"],
       mutationFn: api.deletePost,
-      onSettled: () => queryClient.invalidateQueries({ queryKey: ['posts'] }),
+      onSettled: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
     }),
 };
 
@@ -325,13 +327,13 @@ function useCreatePost() {
 // subscribe only to what you need — other field changes won't cause a re-render
 const { data: titles } = useQuery({
   ...postQueries.list(),
-  select: (posts) => posts.map(p => p.title),
+  select: (posts) => posts.map((p) => p.title),
 });
 
 // convert array to Map for O(1) lookups
 const { data: postsById } = useQuery({
   ...postQueries.list(),
-  select: (posts) => new Map(posts.map(p => [p.id, p])),
+  select: (posts) => new Map(posts.map((p) => [p.id, p])),
 });
 ```
 
@@ -370,7 +372,7 @@ function EditPostForm({ postId }: { postId: number }) {
 
   const { register, handleSubmit } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
-    values: post,          // auto-populates the form once data loads
+    values: post, // auto-populates the form once data loads
   });
 
   const { mutateAsync } = useMutation({
@@ -378,12 +380,12 @@ function EditPostForm({ postId }: { postId: number }) {
     onSuccess: (updated) => {
       // write directly to cache to avoid an extra network request
       queryClient.setQueryData(postQueries.detail(postId).queryKey, updated);
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
 
   return (
-    <form onSubmit={handleSubmit(data => mutateAsync(data))}>
+    <form onSubmit={handleSubmit((data) => mutateAsync(data))}>
       {/* fields */}
     </form>
   );
@@ -394,11 +396,11 @@ function EditPostForm({ postId }: { postId: number }) {
 
 ## v5 Breaking Changes Summary
 
-| v4 | v5 |
-|---|---|
-| `useQuery(key, fn, opts)` | `useQuery({ queryKey, queryFn, ...opts })` |
-| `useMutation(fn, opts)` | `useMutation({ mutationFn, ...opts })` |
-| `isLoading` | `isPending` (no data yet on initial load) |
+| v4                           | v5                                            |
+| ---------------------------- | --------------------------------------------- |
+| `useQuery(key, fn, opts)`    | `useQuery({ queryKey, queryFn, ...opts })`    |
+| `useMutation(fn, opts)`      | `useMutation({ mutationFn, ...opts })`        |
+| `isLoading`                  | `isPending` (no data yet on initial load)     |
 | `context` prop for isolation | pass a custom `queryClient` instance directly |
-| — | `queryOptions()` factory (new) |
-| — | `mutationOptions()` factory (new) |
+| —                            | `queryOptions()` factory (new)                |
+| —                            | `mutationOptions()` factory (new)             |
