@@ -37,16 +37,32 @@ npm run format    # Run Prettier formatter
 
 ### Planning Before Implementation
 
-**Always plan before implementing.** Before starting any feature implementation, a plan must be created and confirmed by the user.
+**Always plan before implementing.** Planning is divided into 3 sequential steps. Each step must be confirmed by the user before proceeding to the next. Steps cannot run in parallel.
 
-1. **Use `/plan` mode to create a plan** — Save plan results to the `plans/` folder, categorized by type:
-   - `plans/business/` — Business requirement plans (feature specs, user stories, acceptance criteria)
-   - `plans/uiux/` — UI/UX plans (page structure, interaction design, component design)
-   - `plans/technical/` — Technical implementation plans (architecture, data structures, API design)
+#### Step 1: Business Plan
 
-2. **Wait for user confirmation** — After the plan is complete, wait for explicit user confirmation (e.g., "OK", "start implementing") before writing any code.
+- Use `/plan` mode to create the business plan
+- Save to `plans/business/` — feature specs, user stories, acceptance criteria
+- **Wait for explicit user confirmation** (e.g., "OK", "confirmed", "proceed") before moving to Step 2
 
-3. **Update plan status after implementation** — Once a feature is implemented, mark the relevant items in the plan file as completed (using `[x]` checkboxes or `✅` status markers).
+#### Step 2: UI/UX Plan
+
+- Only start after Step 1 is confirmed
+- Use `/plan` mode to create the UI/UX plan
+- Save to `plans/uiux/` — page structure, interaction design, component design
+- **Wait for explicit user confirmation** before moving to Step 3
+
+#### Step 3: Technical Plan
+
+- Only start after Step 2 is confirmed
+- Use `/plan` mode to create the technical plan
+- Save to `plans/technical/` — architecture, data structures, API design
+- **Wait for explicit user confirmation** before starting any implementation
+
+#### After All Plans Are Confirmed
+
+4. **Implement** — Begin coding only after all 3 plans are confirmed
+5. **Update plan status** — Mark completed items with `[x]` checkboxes or `✅` markers in the plan files
 
 ### Plan File Format
 
