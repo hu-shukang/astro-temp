@@ -8,6 +8,12 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",
+    "test:unit": "vitest --project unit",
+    "test:integration": "vitest --project integration",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "lint": "eslint . --fix",
     "format": "prettier . --write"
   },
@@ -23,17 +29,24 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.2.1",
+    "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.56.1",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/browser": "^4.0.18",
+    "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
+    "clsx": "^2.1.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.6.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.4.0",
+    "happy-dom": "^20.8.3",
     "prettier": "3.8.1",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-organize-imports": "^4.3.0",
@@ -41,6 +54,6 @@
     "tailwindcss": "^4.2.1",
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18",
-    "clsx": "^2.1.1"
+    "vitest-browser-react": "^2.0.5"
   }
 }
