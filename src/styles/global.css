@@ -1,1 +1,54 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap");
+
+@theme {
+  /* ─── カラーパレット ─── */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #dbeafe;
+
+  --color-success: #16a34a;
+  --color-success-light: #dcfce7;
+
+  --color-warning: #f97316;
+  --color-warning-light: #ffedd5;
+
+  --color-danger: #ef4444;
+  --color-danger-light: #fee2e2;
+
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+
+  /* ─── フォント ─── */
+  --font-heading: "Fira Code", monospace;
+  --font-body: "Fira Sans", sans-serif;
+
+  /* ─── TopNav高さ ─── */
+  --topnav-height: 56px;
+}
+
+html {
+  background-color: var(--color-background);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+}
+
+.app-content {
+  padding-top: var(--topnav-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

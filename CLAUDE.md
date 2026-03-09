@@ -72,6 +72,18 @@ Plan files use Markdown format with `kebab-case` filenames, for example:
 - `plans/uiux/dashboard-redesign.md`
 - `plans/technical/auth-flow.md`
 
+## Skills
+
+**Always invoke the appropriate skill before writing code.** Do not write code without first loading the relevant skill.
+
+| Task                                           | Skill to use             |
+| ---------------------------------------------- | ------------------------ |
+| Astro pages, layouts, routing, islands         | `astro-pattern`          |
+| React components, hooks, Zustand stores, forms | `react-developer`        |
+| UI/UX design, component styling                | `ui-ux-pro-max`          |
+| Writing or reviewing tests                     | `frontend-tester`        |
+| Implementing from Figma designs                | `figma:implement-design` |
+
 ## Code Style
 
 ESLint + Prettier enforces code style. Prettier handles formatting (via `prettier-plugin-astro`, `prettier-plugin-tailwindcss`, `prettier-plugin-organize-imports`). ESLint handles linting with TypeScript and Astro rules.

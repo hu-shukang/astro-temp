@@ -1,0 +1,22 @@
+---
+import "../styles/global.css";
+import Layout from "./Layout.astro";
+import TopNav from "../components/layout/TopNav";
+import ToastContainer from "../components/ui/Toast";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={title}>
+  <TopNav client:load />
+  <main class="app-content bg-background min-h-screen">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <slot />
+    </div>
+  </main>
+  <ToastContainer client:load />
+</Layout>

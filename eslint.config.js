@@ -26,8 +26,7 @@ export default defineConfig([
   eslintPluginPrettierRecommended,
   {
     rules: {
-      // override/add rules settings here, such as:
-      // "astro/no-set-html-directive": "error"
+      "react/react-in-jsx-scope": "off",
     },
   },
 ]);
