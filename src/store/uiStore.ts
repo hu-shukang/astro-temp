@@ -23,15 +23,14 @@ export const useUiStore = create<UiState>((set) => ({
   toggleMobileMenu: () =>
     set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
   setActiveDropdown: (key) => set({ activeDropdown: key }),
-  addToast: (message, type) =>
-    set((state) => {
-      const id = `toast-${Date.now()}`;
-      const toast: Toast = { id, message, type };
-      setTimeout(() => {
-        set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }));
-      }, 3000);
-      return { toasts: [...state.toasts, toast] };
-    }),
+  addToast: (message, type) => {
+    const id = crypto.randomUUID();
+    const toast: Toast = { id, message, type };
+    set((state) => ({ toasts: [...state.toasts, toast] }));
+    setTimeout(() => {
+      set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }));
+    }, 3000);
+  },
   removeToast: (id) =>
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 }));

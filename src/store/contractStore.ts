@@ -8,6 +8,7 @@ interface ContractState {
   isLoading: boolean;
   setSelectedContract: (id: string) => void;
   setLoading: (loading: boolean) => void;
+  reset: () => void;
 }
 
 export const useContractStore = create<ContractState>((set) => ({
@@ -19,4 +20,10 @@ export const useContractStore = create<ContractState>((set) => ({
     setTimeout(() => set({ isLoading: false }), 200);
   },
   setLoading: (loading) => set({ isLoading: loading }),
+  reset: () =>
+    set({
+      contracts: mockContracts,
+      selectedContractId: mockContracts[0]?.id ?? null,
+      isLoading: false,
+    }),
 }));

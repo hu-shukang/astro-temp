@@ -74,7 +74,11 @@ export default function TopNav() {
   // ドロップダウン外クリックで閉じる
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+      if (
+        e.target instanceof Node &&
+        navRef.current &&
+        !navRef.current.contains(e.target)
+      ) {
         setActiveDropdown(null);
       }
     };

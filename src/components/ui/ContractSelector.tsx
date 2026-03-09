@@ -15,7 +15,11 @@ export function ContractSelector() {
   // 外側クリックで閉じる
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (
+        e.target instanceof Node &&
+        ref.current &&
+        !ref.current.contains(e.target)
+      ) {
         setOpen(false);
       }
     }

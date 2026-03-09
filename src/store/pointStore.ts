@@ -13,6 +13,7 @@ interface PointState {
   expiringPoints: number;
   expiringDate: string | null;
   redeemForBill: (points: number) => void;
+  reset: () => void;
 }
 
 export const usePointStore = create<PointState>((set) => ({
@@ -23,7 +24,7 @@ export const usePointStore = create<PointState>((set) => ({
   redeemForBill: (points) =>
     set((state) => {
       const newEntry: PointHistory = {
-        id: `ph-redeem-${Date.now()}`,
+        id: `ph-redeem-${crypto.randomUUID()}`,
         userId: "user-001",
         type: "used",
         amount: -points,
@@ -34,5 +35,12 @@ export const usePointStore = create<PointState>((set) => ({
         balance: state.balance - points,
         history: [newEntry, ...state.history],
       };
+    }),
+  reset: () =>
+    set({
+      balance: mockPointBalance,
+      history: mockPointHistory,
+      expiringPoints: mockExpiringPoints,
+      expiringDate: mockExpiringDate,
     }),
 }));

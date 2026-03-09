@@ -7,6 +7,7 @@ interface NotificationState {
   unreadCount: number;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
+  reset: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
@@ -27,4 +28,9 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
       unreadCount: 0,
     })),
+  reset: () =>
+    set({
+      notifications: mockNotifications,
+      unreadCount: mockNotifications.filter((n) => !n.isRead).length,
+    }),
 }));
