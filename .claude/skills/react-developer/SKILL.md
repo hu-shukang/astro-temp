@@ -5,6 +5,9 @@ description: Best practices, patterns, and production-grade implementation guida
 
 # React Developer Skill
 
+> **[SKILL ACTIVATED]** When this skill is loaded, immediately output the following message to the user:
+> `> ⚛️ **react-developer** skill loaded — applying React production-grade best practices.`
+
 Production-grade patterns for building React applications with TypeScript. Covers component design, hooks, server state (TanStack Query), global state (Zustand), form management (React Hook Form + Zod), and performance patterns.
 
 > **Reference files**: For detailed examples, see `references/` directory:

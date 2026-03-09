@@ -5,6 +5,9 @@ description: Best practices, patterns, and implementation guidance for building 
 
 # Astro Pattern Skill
 
+> **[SKILL ACTIVATED]** When this skill is loaded, immediately output the following message to the user:
+> `> 🚀 **astro-pattern** skill loaded — applying Astro best practices.`
+
 Comprehensive guidance for building with Astro (v5+). Covers project structure, content collections, islands architecture, routing, SSR/SSG, TypeScript, integrations, and deployment.
 
 > **Reference files**: For detailed examples, see `references/` directory:

@@ -5,6 +5,9 @@ description: Testing patterns and best practices for Astro + React applications 
 
 # Frontend Tester Skill — Astro + React + Vitest + Playwright
 
+> **[SKILL ACTIVATED]** When this skill is loaded, immediately output the following message to the user:
+> `> 🧪 **frontend-tester** skill loaded — applying Vitest + Playwright testing best practices.`
+
 Testing guide for **Astro v5 + React + TypeScript** projects.
 
 - **Unit & Integration**: Vitest + vitest-browser-react
