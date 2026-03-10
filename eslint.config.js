@@ -8,7 +8,16 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
-    ignores: ["dist/", ".astro/", ".claude"],
+    ignores: [
+      "dist/",
+      ".astro/",
+      ".claude/",
+      ".agents/",
+      "node_modules/",
+      "e2e/",
+      "playwright-report/",
+      "test-results/",
+    ],
   },
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],

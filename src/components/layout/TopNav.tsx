@@ -139,7 +139,7 @@ export default function TopNav() {
                     </svg>
                   </button>
                   {isOpen && (
-                    <div className="bg-surface border-border absolute top-full left-0 mt-1 min-w-[160px] rounded-md border shadow-md">
+                    <div className="bg-surface border-border absolute top-full left-0 mt-1 min-w-40 rounded-md border shadow-md">
                       {/* サービスメニューのみポイントの後に区切り線 */}
                       {item.dropdownKey === "service"
                         ? item.items?.map((sub, i) => (
@@ -260,7 +260,7 @@ export default function TopNav() {
               </svg>
             </button>
             {activeDropdown === "user" && (
-              <div className="bg-surface border-border absolute top-full right-0 mt-1 min-w-[160px] rounded-md border shadow-md">
+              <div className="bg-surface border-border absolute top-full right-0 mt-1 min-w-40 rounded-md border shadow-md">
                 {USER_MENU_ITEMS.map((item, i) => (
                   <div key={item.href}>
                     {(i === 1 || i === USER_MENU_ITEMS.length - 1) && i > 0 && (
